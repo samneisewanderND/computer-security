@@ -90,6 +90,9 @@ def decrypt(ciphertext: str, key: str):
     key_plus = permute(key, PC_1)
     round_keys = generate_round_keys(key_plus)
 
+    for i, key in enumerate(round_keys):
+        print(f"Key {i:02}: {key}")
+
     # 2. Decode 64-bit block of data
     ip = permute(ciphertext, IP)
 
@@ -98,10 +101,12 @@ def decrypt(ciphertext: str, key: str):
 
     for i in reversed(range(1, 17)):
         l_curr = r_prev
-        r_curr = xor(l_prev, f(r_prev, round_keys[i - 1]))
+        f_output = f(r_prev, round_keys[i - 1])
+        r_curr = xor(l_prev, f_output)
 
         l_prev = l_curr
         r_prev = r_curr
+        print(f"Round {i:02}, {"f(R_{i}, K_{i})":10}: {f_output}\tLnRn: {l_curr + r_curr}")
 
     return permute(r_curr + l_curr, IP_INV)
 
